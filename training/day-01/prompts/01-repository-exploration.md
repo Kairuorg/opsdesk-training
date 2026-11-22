@@ -1,72 +1,72 @@
-# Prompt cards — Repository exploration (Day 01)
+# Prompt kartları — Repo keşfi (1. Gün)
 
-**Purpose:** Observe the agentic loop: gather context → use tools → interpret results → report evidence.  
-**Rule:** This part is **read-only**. Run in Claude Code's planning/read-only mode where available, review requested permissions, and do not authorize edits or destructive commands. A prompt alone does not enforce access restrictions.
+**Amaç:** Agentic loop'u gözlemlemek: bağlam topla → tool kullan → sonuçları yorumla → kanıtı raporla.  
+**Kural:** Bu bölüm **salt okunur**dur. Mümkün olan yerde Claude Code'un planlama / salt okunur modunda çalış, istenen izinleri incele, düzenlemeye ya da yıkıcı komutlara izin verme. Prompt tek başına erişim kısıtı uygulamaz.
 
-## Prompt 01 — Map the codebase (09:30–10:45 demo)
+## Prompt 01 — Kod tabanının haritasını çıkar (09:30–10:45 demo)
 
 ```text
-Examine the OpsDesk repository without editing files.
-1. Explain the project's purpose and main directories.
-2. Find the Incident and Task models and their fields.
-3. Locate GET /incidents and trace its current behavior.
-4. Identify tests that protect existing API behavior.
-5. Cite exact file paths and relevant function names for each claim.
-6. Separate confirmed observations from assumptions.
-Do not install dependencies, edit files, commit, or push changes.
+OpsDesk reposunu hiçbir dosyayı düzenlemeden incele.
+1. Projenin amacını ve ana klasörlerini açıkla.
+2. Incident ve Task modellerini ve alanlarını bul.
+3. GET /incidents endpoint'ini bul ve şu anki davranışını izle.
+4. Mevcut API davranışını koruyan testleri belirle.
+5. Her iddia için tam dosya yolunu ve ilgili fonksiyon adını ver.
+6. Doğrulanmış gözlemleri varsayımlardan ayır.
+Şunları yapma: bağımlılık kurmak, dosya düzenlemek, commit ya da push etmek.
 ```
 
-**Observe:** which files were read; whether the agent searched before reading; whether claims cite real paths; whether any edit was requested. Record the tool operations, not merely the final prose.
+**Gözlemle:** hangi dosyalar okundu; agent okumadan önce arama yaptı mı; iddialar gerçek dosya yollarına dayanıyor mu; herhangi bir düzenleme istendi mi. Yalnızca son metni değil, tool işlemlerini kaydet.
 
-## Prompt 02 — Explain the intentional test failures
+## Prompt 02 — Bilinçli test hatalarını açıkla
 
-First run the commands yourself from the repository root:
+Önce komutları repo kökünden kendin çalıştır:
 
 ```bash
 pytest -q -m 'not ops101'
 pytest -q -m ops101
 ```
 
-Then supply the **real command output**, or ask the agent to inspect existing test code without running commands that have not been approved.
+Sonra **gerçek komut çıktısını** ver ya da agent'tan, onaylanmamış komut çalıştırmadan mevcut test kodunu incelemesini iste.
 
 ```text
-Analyze tests/test_ops101.py alongside the GET /incidents endpoint.
-For each OPS-101 acceptance test, identify:
-- intended behavior,
-- current observed/statically inferred behavior,
-- likely reason for failure,
-- the source file(s) to inspect next.
-Do not change any files or weaken tests.
-Distinguish test output I supplied from conclusions inferred from source.
+tests/test_ops101.py dosyasını GET /incidents endpoint'iyle birlikte analiz et.
+Her OPS-101 kabul testi için şunları belirle:
+- amaçlanan davranış,
+- şu an gözlemlenen ya da koddan statik olarak çıkarılan davranış,
+- hatanın olası nedeni,
+- bundan sonra incelenecek kaynak dosya(lar).
+Hiçbir dosyayı değiştirme, testleri gevşetme.
+Benim verdiğim test çıktısını, kaynaktan çıkardığın sonuçlardan ayır.
 ```
 
-**Expected untouched baseline:** 7 baseline tests pass. OPS-101 has 4 failing tests (critical, high, no matches, invalid severity) and 1 passing test (no filter).
+**Dokunulmamış başlangıçta beklenen:** 7 baseline testi geçer. OPS-101'de 4 test kalır (critical, high, eşleşme yok, geçersiz severity), 1 test geçer (filtre yok).
 
-## Prompt 03 — Impact analysis, not implementation (11:00–12:30)
+## Prompt 03 — Uygulama değil, etki analizi (11:00–12:30)
 
 ```text
-Read docs/OPS-101.md and inspect the relevant endpoint, models, schemas,
-and tests. Propose the smallest implementation plan that satisfies
-all acceptance criteria.
-For each planned change include:
-- exact file / function,
-- required behavior,
-- why it is necessary,
-- risk to existing contracts,
-- how it will be verified.
-Do not edit source or test files. Stop after presenting the plan for approval.
+docs/OPS-101.md dosyasını oku ve ilgili endpoint'i, modelleri, şemaları
+ve testleri incele. Bütün kabul kriterlerini karşılayan en küçük
+uygulama planını öner.
+Planlanan her değişiklik için şunları yaz:
+- tam dosya / fonksiyon,
+- gereken davranış,
+- neden gerekli olduğu,
+- mevcut sözleşmelere riski,
+- nasıl doğrulanacağı.
+Kaynak ve test dosyalarını değiştirme. Planı onaya sunduktan sonra dur.
 ```
 
-**Review questions:** Does the plan validate supported severities? Preserve unfiltered listing? Return 422 for unsupported values? Filter in the query? Preserve ordering? Leave tests intact?
+**İnceleme soruları:** Plan desteklenen severity değerlerini doğruluyor mu? Filtresiz listelemeyi koruyor mu? Desteklenmeyen değerler için 422 döndürüyor mu? Filtreyi sorguda mı uyguluyor? Sıralamayı koruyor mu? Testlere dokunmuyor mu?
 
-## Trainer-led comparison
+## Eğitmen eşliğinde karşılaştırma
 
-Ask participants to compare a vague prompt ("Fix the endpoint") against the structured prompt above. Discuss which produced better **verifiable evidence**, not which answer sounded more confident.
+Muğlak bir prompt ("Endpoint'i düzelt") ile yukarıdaki yapılandırılmış prompt'un çıktıları yan yana gösterilir. Tartışılacak soru hangi cevabın daha emin konuştuğu değil, hangisinin daha iyi **doğrulanabilir kanıt** ürettiğidir.
 
-## Evidence to capture
+## Kaydedilecek kanıt
 
-- Agent's list of tools used (from the UI/session trace).
-- File paths reviewed.
-- At least one mistaken assumption or uncertainty and how it was resolved.
-- Proposed change list, **without** source modifications during this activity.
-- `git diff --exit-code` for a clean working tree if participants began from an untouched branch.
+- Agent'ın kullandığı tool'ların listesi (arayüzden ya da oturum kaydından).
+- İncelenen dosya yolları.
+- En az bir hatalı varsayım ya da belirsizlik ve nasıl çözüldüğü.
+- Önerilen değişiklik listesi; bu etkinlikte kaynak dosyalar **değiştirilmez**.
+- Dokunulmamış bir daldan başlandıysa temiz çalışma kopyası için `git diff --exit-code`.
