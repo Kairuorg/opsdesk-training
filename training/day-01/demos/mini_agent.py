@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 # 1. Çalışma ortamı
@@ -18,10 +17,10 @@ def read_file(filename):
 def mock_model(history):
     if len(history) == 1:
         return {"tool": "read_file", "args": {"filename": "README.md"}}
-    result = history[-1]["result"]
-    return {"final": f"README içeriği:\n{result[:300]}"}
+    return {"final": history[-1]["result"][:300]}
 
 # 4. Harness: Tool çağrısı ve agentic loop
+# Harness: seç → çalıştır → sonucu history'ye ekle
 def run_agent(task):
     history = [{"role": "user", "content": task}]
 
