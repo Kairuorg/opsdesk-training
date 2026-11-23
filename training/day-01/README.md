@@ -38,7 +38,7 @@ By the end of the day you can:
 ## Before the session
 
 1. Use Python 3.12+ with an isolated virtual environment.
-2. From the **repository root**, install dependencies: `python -m pip install -e '.[dev]'`.
+2. From the **repository root**, install the pinned dependencies: `python -m pip install -r requirements.txt`, then `python -m pip install -e . --no-deps`.
 3. Confirm `pytest -q -m 'not ops101'` passes.
 4. Confirm `pytest -q -m ops101` reports **4 failures and 1 pass** on the untouched starter.
 5. Check `git status --short` and preserve the starter tag `training/day1-start` **before** implementing the feature.

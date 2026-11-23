@@ -10,10 +10,13 @@ A **synthetic** task/incident management API for Antalya Havalimanı's four-day 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate          # Windows PowerShell: .venv\Scripts\Activate.ps1
-python -m pip install -e '.[dev]'
+python -m pip install -r requirements.txt
+python -m pip install -e . --no-deps
 python -m scripts.seed_demo
 uvicorn app.main:app --reload
 ```
+
+`requirements.txt` pins the exact versions the starter was tested with, so every participant gets the same environment. `pyproject.toml` keeps the looser version ranges; `python -m pip install -e '.[dev]'` still works but may pull newer releases.
 
 API docs: http://127.0.0.1:8000/docs
 
