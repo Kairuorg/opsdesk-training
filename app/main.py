@@ -1,12 +1,22 @@
 """OpsDesk starter API."""
 from contextlib import asynccontextmanager
-from fastapi import Depends, FastAPI, HTTPException, status
+from typing import Annotated
+
+from fastapi import Depends, FastAPI, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.database import Base, engine, get_db
 from app.models import ApplicationLog, Incident, Task
-from app.schemas import IncidentCreate, IncidentRead, LogRead, Severity, TaskCreate, TaskRead
+from app.schemas import (
+    IncidentCreate,
+    IncidentRead,
+    IncidentStatus,
+    LogRead,
+    Severity,
+    TaskCreate,
+    TaskRead,
+)
 
 
 @asynccontextmanager
@@ -38,10 +48,16 @@ def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
 
 
 @app.get("/incidents", response_model=list[IncidentRead])
-def list_incidents(severity: Severity | None = None, db: Session = Depends(get_db)):
+def list_incidents(
+    severity: Severity | None = None,
+    incident_status: Annotated[IncidentStatus | None, Query(alias="status")] = None,
+    db: Session = Depends(get_db),
+):
     query = select(Incident)
     if severity is not None:
         query = query.where(Incident.severity == severity)
+    if incident_status is not None:
+        query = query.where(Incident.status == incident_status)
     return db.scalars(query.order_by(Incident.id)).all()
 
 
