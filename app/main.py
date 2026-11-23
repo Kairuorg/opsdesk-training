@@ -1,4 +1,4 @@
-"""OpsDesk starter API. OPS-101 filtering is deliberately NOT implemented."""
+"""OpsDesk starter API."""
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy import select
@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.database import Base, engine, get_db
 from app.models import ApplicationLog, Incident, Task
-from app.schemas import IncidentCreate, IncidentRead, LogRead, TaskCreate, TaskRead
+from app.schemas import IncidentCreate, IncidentRead, LogRead, Severity, TaskCreate, TaskRead
 
 
 @asynccontextmanager
@@ -38,9 +38,11 @@ def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
 
 
 @app.get("/incidents", response_model=list[IncidentRead])
-def list_incidents(db: Session = Depends(get_db)):
-    # TODO(OPS-101): accept optional severity, validate enum and filter at SQL layer.
-    return db.scalars(select(Incident).order_by(Incident.id)).all()
+def list_incidents(severity: Severity | None = None, db: Session = Depends(get_db)):
+    query = select(Incident)
+    if severity is not None:
+        query = query.where(Incident.severity == severity)
+    return db.scalars(query.order_by(Incident.id)).all()
 
 
 @app.get("/incidents/{incident_id}", response_model=IncidentRead)
